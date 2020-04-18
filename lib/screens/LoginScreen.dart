@@ -1,6 +1,10 @@
-import 'package:erplytest/bloc/VerificationBloc.dart';
+import 'package:erplytest/models/UserModel.dart';
+import 'package:erplytest/models/VerificationResponse.dart';
+import 'package:erplytest/networking/API.dart';
+import 'package:erplytest/widgets/AppTextField.dart';
 import 'package:erplytest/widgets/GenericWidgets.dart';
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import '../Utils.dart';
 
@@ -13,90 +17,82 @@ class LoginScreen extends StatelessWidget {
         title: Text("ERPLY"),
         backgroundColor: Colors.blue,
       ),
-      body: Center(child: _loginContent()),
+      body: Center(child: _loginContent(context)),
     );
   }
-}
 
-Widget _loginContent() {
-  return _loginFields();
-}
+  Widget _loginContent(BuildContext context) {
+    return _loginFields(context);
+  }
 
-Widget _loginFields() {
-  VerificationBloc _bloc = VerificationBloc();
-  final TextEditingController accountController = TextEditingController();
-  final TextEditingController usernameController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  return Container(
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.all(Utils.padding_15),
-          child: Text(
-            "Client Login",
-            style: TextStyle(fontSize: 25.0),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(Utils.padding_15),
-          child: textField("Enter account #", accountController, true),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(Utils.padding_15),
-          child: textField("Enter username", usernameController, false),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(Utils.padding_15),
-          child: textField("Enter password", passwordController, false),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: raisedButton("Login", () {
-            validateFields(
-                accountController, usernameController, passwordController);
-          }),
-        ),
-      ],
-    ),
-  );
-}
+  Widget _loginFields(BuildContext context) {
+    final TextEditingController accountController = TextEditingController();
+    final TextEditingController usernameController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+    return Form(
+      child: Builder(
+          builder: (childContext)=>(
+              Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(Utils.padding_15),
+                      child: Text(
+                        "Client Login",
+                        style: TextStyle(fontSize: 25.0),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(Utils.padding_15),
+                      child: AppTextField(
+                        hint:"Enter account #",
+                        textEditingController:accountController,
+                        isNumberOnly:true,
+                        validator: (v)=>v.length < 6 ? "Account number cannot be less than 6" : null,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(Utils.padding_15),
+                      child: AppTextField(hint: "Enter username",
+                        textEditingController: usernameController,
+                        isNumberOnly: false,
+                        validator: (v)=>v.isEmpty ? "Please enter username" : null,),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(Utils.padding_15),
+                      child: AppTextField(hint:"Enter password",
+                        textEditingController: passwordController,
+                        isNumberOnly: false,
+                        validator: (v)=>v.isEmpty ? "Please enter shit" : null,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: raisedButton("Login", () {
+                        if(Form.of(childContext).validate()){
+                          API(context).get<Map<String,dynamic>>(params: {
+                            "clientCode": "468609",
+                            "username": "test",
+                            "password": "Testing101",
+                            "request": "verifyUser"
+                          }).then((res) {
+                            var data = VerificationResponse.fromJson(res.data);
+                            ScopedModel.of<UserModel>(context).setSessionKey(data.records[0].sessionKey);
+                          }).catchError((e){
+                            debugPrint(e.toString());
+                          });
+                        }
 
-void validateFields(
-    TextEditingController accountController,
-    TextEditingController usernameController,
-    TextEditingController passwordController) {
-  if (accountController.text.isEmpty) {
-  } else if (accountController.text.length < 6) {
-  } else if (usernameController.text.isEmpty) {
-  } else if (passwordController.text.isEmpty) {}
-}
-
-class Loading extends StatelessWidget {
-  final String loadingMessage;
-
-  const Loading({Key key, this.loadingMessage}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(
-            loadingMessage,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-            ),
-          ),
-          SizedBox(height: 24),
-          CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-          ),
-        ],
+//            Navigator.push(context, MaterialPageRoute(builder: (context) => ProductScreen()));
+                      }),
+                    ),
+                  ],
+                ),
+              )
+          )
       ),
     );
   }
+
 }
