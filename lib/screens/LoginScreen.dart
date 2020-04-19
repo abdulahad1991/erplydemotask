@@ -91,33 +91,40 @@ class _LoginScreenState extends State<LoginScreen> {
                             text: "Login",
                             isLoading: isLoading,
                             onPressed: () async {
-                              FocusScope.of(childContext).requestFocus(FocusNode());
-                              if (Form.of(childContext).validate()) {
-                                final result = await InternetAddress.lookup('www.google.com');
-                                if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-                                  setState(() {
-                                    isLoading = true;
-                                  });
-                                  var res = await loginUser(
-                                      context,
-                                      accountController.text,
-                                      usernameController.text,
-                                      passwordController.text);
-                                  if (res.errorCode == 0) {
-                                    Navigator.pushReplacement(
+                              try{
+                                FocusScope.of(childContext).requestFocus(FocusNode());
+                                if (Form.of(childContext).validate()) {
+                                  final result = await InternetAddress.lookup('www.google.com');
+                                  if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+                                    setState(() {
+                                      isLoading = true;
+                                    });
+                                    var res = await loginUser(
                                         context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                ProductScreen()));
-                                  } else {
-                                    Scaffold.of(childContext).showSnackBar(SnackBar(content: Text(ErrorCodes().errorMessage[res.errorCode]),));
+                                        accountController.text,
+                                        usernameController.text,
+                                        passwordController.text);
+                                    if (res.errorCode == 0) {
+                                      Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ProductScreen()));
+                                    } else {
+                                      Scaffold.of(childContext).showSnackBar(SnackBar(content: Text(ErrorCodes().errorMessage[res.errorCode]),));
+                                    }
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+                                  }else {
+                                    Scaffold.of(childContext).showSnackBar(SnackBar(content: Text("Please connect to the internet"),));
                                   }
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-                                }else {
-                                  Scaffold.of(childContext).showSnackBar(SnackBar(content: Text("Please connect to the internet"),));
                                 }
+                              }catch(e){
+                                setState(() {
+                                  isLoading = false;
+                                });
+                                Scaffold.of(childContext).showSnackBar(SnackBar(content: Text("Please connect to the internet"),));
                               }
                             }),
                       ),
