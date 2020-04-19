@@ -5,11 +5,10 @@ import 'package:flutter/cupertino.dart';
 class API {
   static final API _singleton = API._internal();
 
-  factory API(BuildContext context) {
+  factory API() {
     return _singleton;
   }
 
-  BuildContext context;
   Dio dio;
 
   API._internal() {

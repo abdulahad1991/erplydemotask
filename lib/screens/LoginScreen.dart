@@ -1,16 +1,19 @@
+import 'package:erplytest/utils/ErrorCodes.dart';
 import 'package:erplytest/utils/Utils.dart';
-import 'package:erplytest/models/UserModel.dart';
-import 'package:erplytest/models/VerificationResponse.dart';
-import 'package:erplytest/networking/API.dart';
 import 'package:erplytest/widgets/AppRaisedButton.dart';
 import 'package:erplytest/widgets/AppTextField.dart';
 import 'package:flutter/material.dart';
-import 'package:scoped_model/scoped_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'ProductScreen.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,29 +86,32 @@ class LoginScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(20.0),
                         child: AppRaisedButton(
                             text: "Login",
+                            isLoading: isLoading,
                             onPressed: () {
+                              FocusScope.of(childContext).requestFocus(FocusNode());
                               if (Form.of(childContext).validate()) {
-                                API(context).get<Map<String, dynamic>>(params: {
-                                  "clientCode": accountController.text,
-                                  "username": usernameController.text,
-                                  "password": passwordController.text,
-                                  "request": "verifyUser"
-                                }).then((res) {
-                                  var data =
-                                      VerificationResponse.fromJson(res.data);
-                                  ScopedModel.of<UserModel>(context)
-                                      .setSessionKey(data.records[0].sessionKey);
-                                  addStringToSF(Utils.SESSION_KEY, data.records[0].sessionKey);
-                                  addStringToSF(Utils.USERNAME_KEY, usernameController.text);
-                                  addStringToSF(Utils.PASSWORD_KEY, passwordController.text);
-                                  addBoolToSF(Utils.IS_LOG_IN_KEY);
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => ProductScreen()));
-                                }).catchError((e) {
-                                  debugPrint(e.toString());
+                                setState(() {
+                                  isLoading = true;
                                 });
+                                (() async {
+                                  var res = await loginUser(
+                                      context,
+                                      accountController.text,
+                                      usernameController.text,
+                                      passwordController.text);
+                                  if (res.errorCode == 0) {
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                ProductScreen()));
+                                  } else {
+                                      Scaffold.of(childContext).showSnackBar(SnackBar(content: Text(ErrorCodes().errorMessage[res.errorCode]),));
+                                  }
+                                  setState(() {
+                                    isLoading = false;
+                                  });
+                                })();
                               }
                             }),
                       ),
