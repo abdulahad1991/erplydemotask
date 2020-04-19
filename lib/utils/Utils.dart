@@ -4,9 +4,11 @@ import 'dart:convert';
 import 'package:erplytest/models/UserModel.dart';
 import 'package:erplytest/models/VerificationResponse.dart';
 import 'package:erplytest/networking/API.dart';
+import 'package:erplytest/screens/LoginScreen.dart';
 import 'package:erplytest/utils/ErrorCodes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -66,4 +68,12 @@ Future<Status> loginUser(BuildContext context,[String account,String username,St
  }catch(e){
    return null;
  }
+}
+
+gotoHome(BuildContext context){
+  Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+          builder: (context) =>
+              LoginScreen()));
 }

@@ -1,5 +1,6 @@
 import 'package:erplytest/models/ProductsResponse.dart';
 import 'package:erplytest/models/UserModel.dart';
+import 'package:erplytest/models/VerificationResponse.dart';
 import 'package:erplytest/networking/API.dart';
 import 'package:erplytest/utils/ErrorCodes.dart';
 import 'package:erplytest/utils/Utils.dart';
@@ -26,7 +27,8 @@ class ProductScreen extends StatelessWidget {
             );
           } else if (result.data.status.errorCode != 0) {
             return Center(
-              child: Text(ErrorCodes().errorMessage[result.data.status.errorCode]),
+              child:
+                  Text(ErrorCodes().errorMessage[result.data.status.errorCode]),
             );
           } else {
             return _productListing(result.data.records, context);
@@ -43,19 +45,23 @@ class ProductScreen extends StatelessWidget {
       "request": "getProducts"
     });
     if (res.data['status']['responseStatus'] == 'error') {
-      if([1054,1055,1056].contains(res.data['status']['errorCode'])){
+      if ([1054, 1055, 1056].contains(res.data['status']['errorCode'])) {
         var gotLogin = await loginUser(context);
         if (gotLogin.errorCode == 0) {
           return _fetchProducts(context);
+        } else {
+          gotoHome(context);
+          return ProductsResponse(status: gotLogin, records: []);
         }
       }
+      gotoHome(context);
       return ProductsResponse(status: Status.fromJson(res.data['status']));
     } else {
       return ProductsResponse.fromJson(res.data);
     }
   }
 
-  Widget _productListing(List<Records> records, BuildContext context) {
+  Widget _productListing(List<ProductRecords> records, BuildContext context) {
     return Container(
       child: RefreshIndicator(
         onRefresh: () => _fetchProducts(context),

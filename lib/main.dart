@@ -5,11 +5,9 @@ import 'package:erplytest/models/UserModel.dart';
 import 'package:erplytest/screens/LoginScreen.dart';
 import 'package:erplytest/screens/ProductScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_stetho/flutter_stetho.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 void main() {
-  Stetho.initialize();
   runApp(MyApp());
 }
 

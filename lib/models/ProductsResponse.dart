@@ -1,6 +1,8 @@
+import 'VerificationResponse.dart';
+
 class ProductsResponse {
   Status status;
-  List<Records> records;
+  List<ProductRecords> records;
 
   ProductsResponse({this.status, this.records});
 
@@ -8,9 +10,9 @@ class ProductsResponse {
     status =
     json['status'] != null ? new Status.fromJson(json['status']) : null;
     if (json['records'] != null) {
-      records = new List<Records>();
+      records = new List<ProductRecords>();
       json['records'].forEach((v) {
-        records.add(new Records.fromJson(v));
+        records.add(new ProductRecords.fromJson(v));
       });
     }
   }
@@ -27,48 +29,7 @@ class ProductsResponse {
   }
 }
 
-class Status {
-  String request;
-  int requestUnixTime;
-  String responseStatus;
-  int errorCode;
-  double generationTime;
-  int recordsTotal;
-  int recordsInResponse;
-
-  Status(
-      {this.request,
-        this.requestUnixTime,
-        this.responseStatus,
-        this.errorCode,
-        this.generationTime,
-        this.recordsTotal,
-        this.recordsInResponse});
-
-  Status.fromJson(Map<String, dynamic> json) {
-    request = json['request'];
-    requestUnixTime = json['requestUnixTime'];
-    responseStatus = json['responseStatus'];
-    errorCode = json['errorCode'];
-    generationTime = json['generationTime'];
-    recordsTotal = json['recordsTotal'];
-    recordsInResponse = json['recordsInResponse'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['request'] = this.request;
-    data['requestUnixTime'] = this.requestUnixTime;
-    data['responseStatus'] = this.responseStatus;
-    data['errorCode'] = this.errorCode;
-    data['generationTime'] = this.generationTime;
-    data['recordsTotal'] = this.recordsTotal;
-    data['recordsInResponse'] = this.recordsInResponse;
-    return data;
-  }
-}
-
-class Records {
+class ProductRecords {
   int productID;
   String name;
   String code;
@@ -76,7 +37,7 @@ class Records {
   String description;
   List<Images> images;
 
-  Records(
+  ProductRecords(
       {this.productID,
         this.name,
         this.code,
@@ -84,7 +45,7 @@ class Records {
         this.description,
         this.images});
 
-  Records.fromJson(Map<String, dynamic> json) {
+  ProductRecords.fromJson(Map<String, dynamic> json) {
     productID = json['productID'];
     name = json['name'];
     code = json['code'];

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:erplytest/utils/ErrorCodes.dart';
 import 'package:erplytest/utils/Utils.dart';
 import 'package:erplytest/widgets/AppRaisedButton.dart';
@@ -13,6 +15,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool isLoading = false;
+
 
   @override
   Widget build(BuildContext context) {
@@ -87,13 +90,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: AppRaisedButton(
                             text: "Login",
                             isLoading: isLoading,
-                            onPressed: () {
+                            onPressed: () async {
                               FocusScope.of(childContext).requestFocus(FocusNode());
                               if (Form.of(childContext).validate()) {
-                                setState(() {
-                                  isLoading = true;
-                                });
-                                (() async {
+                                final result = await InternetAddress.lookup('www.google.com');
+                                if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+                                  setState(() {
+                                    isLoading = true;
+                                  });
                                   var res = await loginUser(
                                       context,
                                       accountController.text,
@@ -106,12 +110,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                             builder: (context) =>
                                                 ProductScreen()));
                                   } else {
-                                      Scaffold.of(childContext).showSnackBar(SnackBar(content: Text(ErrorCodes().errorMessage[res.errorCode]),));
+                                    Scaffold.of(childContext).showSnackBar(SnackBar(content: Text(ErrorCodes().errorMessage[res.errorCode]),));
                                   }
                                   setState(() {
                                     isLoading = false;
                                   });
-                                })();
+                                }else {
+                                  Scaffold.of(childContext).showSnackBar(SnackBar(content: Text("Please connect to the internet"),));
+                                }
                               }
                             }),
                       ),
