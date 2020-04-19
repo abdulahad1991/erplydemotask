@@ -1,5 +1,7 @@
+import 'package:erplytest/utils/Utils.dart';
 import 'package:erplytest/models/UserModel.dart';
 import 'package:erplytest/screens/LoginScreen.dart';
+import 'package:erplytest/screens/ProductScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -17,17 +19,17 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: LoginScreen(),
+        home: LoginScreen()/*FutureBuilder<bool>(
+          future: getBoolValuesSF(Utils.IS_LOG_IN_KEY),
+          builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
+            if(snapshot.data){
+              return ProductScreen();
+            }else {
+              return LoginScreen();
+            }
+          },
+        )*/,
       ),
-    );
-
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'ERPLY',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: LoginScreen(),
     );
   }
 }

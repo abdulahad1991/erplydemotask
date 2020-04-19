@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:erplytest/Utils.dart';
+import 'package:erplytest/utils/Utils.dart';
 import 'package:flutter/cupertino.dart';
 
 class API {

@@ -4,9 +4,15 @@ class AppTextField extends StatelessWidget{
   final String hint;
   final TextEditingController textEditingController;
   final bool isNumberOnly;
+  final bool isPassword;
   final FormFieldValidator<String> validator;
 
-  const AppTextField({Key key, this.hint, this.textEditingController, this.isNumberOnly,this.validator}) : super(key: key);
+  const AppTextField({Key key,
+    this.hint,
+    this.textEditingController,
+    this.isNumberOnly,
+    this.isPassword,
+    this.validator}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +23,7 @@ class AppTextField extends StatelessWidget{
           border: OutlineInputBorder(),
           hintText: hint
       ),
+      obscureText: isPassword?true:false,
       keyboardType: isNumberOnly?TextInputType.number:TextInputType.text,
     );
   }
